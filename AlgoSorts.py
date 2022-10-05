@@ -7,6 +7,17 @@ source: geeksforgeeks.org
 """
 import numpy as np
 import random
+import time
+
+RAND_FLOOR = 0
+RAND_CEIL = 10
+
+def invokeTimed(func, *args):
+    startTime = time.time()
+    funcResult = func(*args)
+    stopTime = time.time()
+    return (stopTime - startTime, funcResult)
+    
 
 def bubblesort(elements):
     swapped = False
@@ -107,10 +118,10 @@ def heapSort(arr):
         
 
 #generate the arrays
-array100 = np.random.randint(0,10,100)
-array1000 = []
-array10000 = []
-array100000 = []
+array100 = np.random.randint(RAND_FLOOR,RAND_CEIL,100)
+array1000 = np.random.randint(RAND_FLOOR,RAND_CEIL,1000)
+array10000 = np.random.randint(RAND_FLOOR,RAND_CEIL,10000)
+array100000 = np.random.randint(RAND_FLOOR,RAND_CEIL,100000)
 
     
 print (array100)
