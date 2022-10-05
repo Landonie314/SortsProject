@@ -5,7 +5,6 @@ source: geeksforgeeks.org
 
 @author: Landon, Alvin, Aidan
 """
-import numpy as np
 import random
 import time
 
@@ -19,21 +18,25 @@ def invokeTimed(func, *args):
     return (stopTime - startTime, funcResult)
     
 
-def bubblesort(elements):
+def bubbleSort(array):
+    arr_copy = list(array)
     swapped = False
     # Looping from size of array from last index[-1] to index [0]
-    for n in range(len(elements)-1, 0, -1):
+    for n in range(len(arr_copy)-1, 0, -1):
         for i in range(n):
-            if elements[i] > elements[i + 1]:
+            if arr_copy[i] > arr_copy[i + 1]:
                 swapped = True
                 # swapping data if the element is less than next element in the array
-                elements[i], elements[i + 1] = elements[i + 1], elements[i]       
+                arr_copy[i], arr_copy[i + 1] = arr_copy[i + 1], arr_copy[i]       
         if not swapped:
             # exiting the function if we didn't make a single swap
             # meaning that the array is already sorted.
-            return
+            break
+    return arr_copy
         
-def selectionSort(array, size):
+def selectionSort(arr):
+    array = list(arr)
+    size = len(arr)
     
     for ind in range(size):
         min_index = ind
@@ -43,7 +46,8 @@ def selectionSort(array, size):
             if array[j] < array[min_index]:
                 min_index = j
          # swapping the elements to sort the array
-        (array[ind], array[min_index]) = (array[min_index], array[ind])    
+        (array[ind], array[min_index]) = (array[min_index], array[ind])
+    return array
         
         #used for radix sort
 def countingSort(arr, exp1):
@@ -70,20 +74,29 @@ def countingSort(arr, exp1):
     # Copying the output array to arr[],
     # so that arr now contains sorted numbers
     i = 0
-    for i in range(0,len(arr)):
+    for i in range(0,n):
         arr[i] = output[i]
+
+# So, apparently, this radix implementation is
+# directly translated from a C++ version of it available
+# online. It's in the data structures project we did last year,
+# almost verbatim. But because C++ is type safe and Python is not,
+# max1/exp DOES NOT get rounded down to 0, and will continue to add digits
+# until floating point becomes so imprecise that it defaults to 0.
  
 # Method to do Radix Sort
-def radixSort(arr):
+def radixSort(array):
+    arr = list(array)
     # Find the maximum number to know number of digits
     max1 = max(arr)
     # Do counting sort for every digit. Note that instead
     # of passing digit number, exp is passed. exp is 10^i
     # where i is current digit number
     exp = 1
-    while max1/exp > 0:
+    while max1//exp > 0: # Kids, always remember: This is Python. Don't assume a type-safe paradigm.
         countingSort(arr,exp)
         exp *= 10
+    return arr
         
         #used for heap sort
 def heapify(arr, n, i):
@@ -105,7 +118,8 @@ def heapify(arr, n, i):
         heapify(arr, n, largest)
 # The main function to sort an array of given size
  
-def heapSort(arr):
+def heapSort(array):
+    arr = list(array)
     n = len(arr)
  # Build a maxheap.
  # Since last parent will be at ((n//2)-1) we can start at that location.
@@ -115,13 +129,15 @@ def heapSort(arr):
     for i in range(n - 1, 0, -1):
         (arr[i], arr[0]) = (arr[0], arr[i])  # swap
         heapify(arr, i, 0)
+    return arr
         
 
 #generate the arrays
-array100 = np.random.randint(RAND_FLOOR,RAND_CEIL,100)
-array1000 = np.random.randint(RAND_FLOOR,RAND_CEIL,1000)
-array10000 = np.random.randint(RAND_FLOOR,RAND_CEIL,10000)
-array100000 = np.random.randint(RAND_FLOOR,RAND_CEIL,100000)
+# Removed the usage of numpy.random.randint - array to list type cast kinda slow
+array100 = [random.randint(RAND_FLOOR,RAND_CEIL) for i in range(100)]
+array1k = [random.randint(RAND_FLOOR,RAND_CEIL) for i in range(1000)]
+array10k = [random.randint(RAND_FLOOR,RAND_CEIL) for i in range(10000)]
+array100k = [random.randint(RAND_FLOOR,RAND_CEIL) for i in range(100000)]
 
     
 print (array100)
