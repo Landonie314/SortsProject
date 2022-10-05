@@ -5,7 +5,7 @@ source: geeksforgeeks.org
 
 @author: Landon, Alvin, Aidan
 """
-
+import numpy as np
 import random
 
 def bubblesort(elements):
@@ -105,3 +105,13 @@ def heapSort(arr):
         (arr[i], arr[0]) = (arr[0], arr[i])  # swap
         heapify(arr, i, 0)
         
+
+#generate the arrays
+array100 = np.random.randint(0,10,100)
+array1000 = []
+array10000 = []
+array100000 = []
+
+    
+print (array100)
+    
