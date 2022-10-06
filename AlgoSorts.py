@@ -139,6 +139,33 @@ array1k = [random.randint(RAND_FLOOR,RAND_CEIL) for i in range(1000)]
 array10k = [random.randint(RAND_FLOOR,RAND_CEIL) for i in range(10000)]
 array100k = [random.randint(RAND_FLOOR,RAND_CEIL) for i in range(100000)]
 
-    
-print (array100)
-    
+writeTime = ""
+#for writing into a txt file so we can copy and paste the time into excel
+out = open('out.txt', 'w')
+
+#Bubble Sort
+out.write("BUBBLE SORT:\n\n")
+print(invokeTimed(bubbleSort, array100))
+#writeTime = invokeTimed(bubbleSort, array100)
+#out.write(writeTime)
+
+
+#Selection Sort
+out.write("SELECTION SORT:\n\n")
+
+
+#Radix Sort
+out.write("RADIX SORT:\n\n")
+
+
+
+#Heap Sort
+out.write("HEAP SORT:\n\n")
+
+
+#Close file
+out.close()
+
+#Opens file to read and print
+out = open('out.txt', 'r')
+print(out.read())
