@@ -7,9 +7,15 @@ source: geeksforgeeks.org
 """
 import random
 import time
+from tkinter import Tk # for copy to clipboard
 
 RAND_FLOOR = 0
 RAND_CEIL = 10
+
+RAND_LARGE_FLOOR = 10**50
+RAND_LARGE_CEIL = 10**51
+
+ARR_SIZES = (100, 1000, 10000)#, 100000)
 
 def invokeTimed(func, *args):
     startTime = time.time()
@@ -132,19 +138,26 @@ def heapSort(array):
     return arr
         
 
+
 #generate the arrays
-# Removed the usage of numpy.random.randint - array to list type cast kinda slow
-array100 = [random.randint(RAND_FLOOR,RAND_CEIL) for i in range(100)]
-array1k = [random.randint(RAND_FLOOR,RAND_CEIL) for i in range(1000)]
-array10k = [random.randint(RAND_FLOOR,RAND_CEIL) for i in range(10000)]
-array100k = [random.randint(RAND_FLOOR,RAND_CEIL) for i in range(100000)]
+def genArray(count,floor=RAND_FLOOR,ceil=RAND_CEIL):
+    return [random.randint(floor,ceil) for i in range(count)]
 
-#writeTime = ""
-#for writing into a txt file so we can copy and paste the time into excel
-#out = open('out.txt', 'w')
+print("Generating arrays...")
+arrays_avg = [genArray(s) for s in ARR_SIZES]
+# create sorted versions of all average arrays
+arrays_sorted = [radixSort(a) for a in arrays_avg]
+# create descending-order arrays from sorted versions
+arrays_reversed = [list(a) for a in arrays_sorted]
+for a in arrays_reversed: a.reverse()
+# radix sort worst-case arrays
+arrays_large = [genArray(s,RAND_LARGE_FLOOR,RAND_LARGE_CEIL) for s in ARR_SIZES]
+# heap sort best/worst case arrays
+arrays_distinct = [list(range(s)) for s in ARR_SIZES]
+arrays_identical = [[random.randint(RAND_FLOOR,RAND_CEIL)]*s for s in ARR_SIZES]
+print("Arrays generated.")
 
-# i've got a better solution. hear me out:
-from tkinter import Tk # AWFUL form but just bear with me
+
 def copyToClipboard(content): # ol' reliable, stolen from the internet
     r = Tk()
     r.withdraw()
@@ -153,50 +166,64 @@ def copyToClipboard(content): # ol' reliable, stolen from the internet
     r.update() # now it stays on the clipboard after the window is closed
     r.destroy()
 
-# this is just a 5-minute hackjob example, but i'm going to
-# try to keep building on this, maybe
-# all sorts take the same arguments, so:
-sorts = {
-    'Bubble Sort': bubbleSort,
-    'Selection Sort': selectionSort,
-    'Radix Sort': radixSort,
-    'Heap Sort': heapSort
+# for excel formatting & best/worst case specification
+sorts = [
+    {
+    'name': 'Bubble Sort',
+    'func': bubbleSort,
+    'best': arrays_sorted,
+    'worst': arrays_reversed,
+    'average': arrays_avg
+    },
+    {
+    'name': 'Selection Sort',
+    'func': selectionSort,
+    'best': arrays_sorted,
+    'worst': arrays_reversed,
+    'average': arrays_avg
+    },
+    {
+    'name': 'Radix Sort',
+    'func': radixSort,
+    'best': arrays_avg,
+    'worst': arrays_large,
+    'average': arrays_avg
+    },
+    {
+    'name': 'Heap Sort',
+    'func': heapSort,
+    'best': arrays_identical,
+    'worst': arrays_distinct,
+    'average': arrays_avg
     }
-results = ['\tAverage Case Time (100)']
+]
+
+results = []
+temp = []
+for size in ARR_SIZES:
+    temp.append("Average case ({0})".format(size))
+    temp.append("Best case ({0})".format(size))
+    temp.append("Worst case ({0})".format(size))
+results.append('\t' + '\t'.join(temp))
+
 for s in sorts:
+    print('\n===',s['name'].upper(),'===\n')
     row_results = []
-    sort_func = sorts[s]
-    row_results.append(s)
-    elapsedTime = invokeTimed(sort_func, array100)[0]
-    row_results.append(str(elapsedTime))
+    row_results.append(s['name'])
+    for i in range(len(ARR_SIZES)):
+        for case in ('average', 'best', 'worst'):
+            print("Timing {0} {1} case with {2} elements...".format(s['name'], case, ARR_SIZES[i]))
+            elapsedTime = invokeTimed(s['func'], s[case][i])[0]
+            row_results.append(str(elapsedTime))
+            print("Elapsed time:", elapsedTime, "seconds\n")
     results.append('\t'.join(row_results))
 
 final_result = '\n'.join(results)
 print(final_result)
+print('Writing to out.txt...')
+with open('out.txt', 'w') as f:
+    f.write(final_result)
+print('Done!')
+print('Also copying to clipboard...')
 copyToClipboard(final_result)
 print('Results copied to clipboard, can now be pasted to Excel.')
-    
-
-#Bubble Sort
-#out.write("BUBBLE SORT:\n\n")
-#print(invokeTimed(bubbleSort, array100))
-
-##writeTime = invokeTimed(bubbleSort, array100)
-##out.write(writeTime)
-
-#Selection Sort
-#out.write("SELECTION SORT:\n\n")
-
-#Radix Sort
-#out.write("RADIX SORT:\n\n")
-
-#Heap Sort
-#out.write("HEAP SORT:\n\n")
-
-#Close file
-#out.close()
-
-#Opens file to read and print
-#out = open('out.txt', 'r')
-#print(out.read())
-#out.close()
