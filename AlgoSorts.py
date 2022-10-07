@@ -139,33 +139,64 @@ array1k = [random.randint(RAND_FLOOR,RAND_CEIL) for i in range(1000)]
 array10k = [random.randint(RAND_FLOOR,RAND_CEIL) for i in range(10000)]
 array100k = [random.randint(RAND_FLOOR,RAND_CEIL) for i in range(100000)]
 
-writeTime = ""
+#writeTime = ""
 #for writing into a txt file so we can copy and paste the time into excel
-out = open('out.txt', 'w')
+#out = open('out.txt', 'w')
+
+# i've got a better solution. hear me out:
+from tkinter import Tk # AWFUL form but just bear with me
+def copyToClipboard(content): # ol' reliable, stolen from the internet
+    r = Tk()
+    r.withdraw()
+    r.clipboard_clear()
+    r.clipboard_append(content)
+    r.update() # now it stays on the clipboard after the window is closed
+    r.destroy()
+
+# this is just a 5-minute hackjob example, but i'm going to
+# try to keep building on this, maybe
+# all sorts take the same arguments, so:
+sorts = {
+    'Bubble Sort': bubbleSort,
+    'Selection Sort': selectionSort,
+    'Radix Sort': radixSort,
+    'Heap Sort': heapSort
+    }
+results = ['\tAverage Case Time (100)']
+for s in sorts:
+    row_results = []
+    sort_func = sorts[s]
+    row_results.append(s)
+    elapsedTime = invokeTimed(sort_func, array100)[0]
+    row_results.append(str(elapsedTime))
+    results.append('\t'.join(row_results))
+
+final_result = '\n'.join(results)
+print(final_result)
+copyToClipboard(final_result)
+print('Results copied to clipboard, can now be pasted to Excel.')
+    
 
 #Bubble Sort
-out.write("BUBBLE SORT:\n\n")
-print(invokeTimed(bubbleSort, array100))
-#writeTime = invokeTimed(bubbleSort, array100)
-#out.write(writeTime)
+#out.write("BUBBLE SORT:\n\n")
+#print(invokeTimed(bubbleSort, array100))
 
+##writeTime = invokeTimed(bubbleSort, array100)
+##out.write(writeTime)
 
 #Selection Sort
-out.write("SELECTION SORT:\n\n")
-
+#out.write("SELECTION SORT:\n\n")
 
 #Radix Sort
-out.write("RADIX SORT:\n\n")
-
-
+#out.write("RADIX SORT:\n\n")
 
 #Heap Sort
-out.write("HEAP SORT:\n\n")
-
+#out.write("HEAP SORT:\n\n")
 
 #Close file
-out.close()
+#out.close()
 
 #Opens file to read and print
-out = open('out.txt', 'r')
-print(out.read())
+#out = open('out.txt', 'r')
+#print(out.read())
+#out.close()
