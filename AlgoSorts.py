@@ -10,7 +10,7 @@ import time
 from tkinter import Tk # for copy to clipboard
 
 RAND_FLOOR = 0
-RAND_CEIL = 10
+RAND_CEIL = 10000
 
 RAND_LARGE_FLOOR = 10**50
 RAND_LARGE_CEIL = 10**51
@@ -150,9 +150,10 @@ arrays_sorted = [radixSort(a) for a in arrays_avg]
 # create descending-order arrays from sorted versions
 arrays_reversed = [list(a) for a in arrays_sorted]
 for a in arrays_reversed: a.reverse()
-# radix sort worst-case arrays
+# radix sort best/worst case arrays (single digits vs many digits)
+arrays_small = [[j%10 for j in i] for i in arrays_avg]
 arrays_large = [genArray(s,RAND_LARGE_FLOOR,RAND_LARGE_CEIL) for s in ARR_SIZES]
-# heap sort best/worst case arrays
+# heap sort best/worst case arrays (homogeneous vs completely heterogeneous)
 arrays_distinct = [list(range(s)) for s in ARR_SIZES]
 arrays_identical = [[random.randint(RAND_FLOOR,RAND_CEIL)]*s for s in ARR_SIZES]
 print("Arrays generated.")
@@ -185,7 +186,7 @@ sorts = [
     {
     'name': 'Radix Sort',
     'func': radixSort,
-    'best': arrays_avg,
+    'best': arrays_small,
     'worst': arrays_large,
     'average': arrays_avg
     },
