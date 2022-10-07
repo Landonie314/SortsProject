@@ -6,7 +6,7 @@ source: geeksforgeeks.org
 @author: Landon, Alvin, Aidan
 """
 import random
-import time
+from datetime import datetime as dt
 from tkinter import Tk # for copy to clipboard
 
 RAND_FLOOR = 0
@@ -18,10 +18,11 @@ RAND_LARGE_CEIL = 10**51
 ARR_SIZES = (100, 1000, 10000)#, 100000)
 
 def invokeTimed(func, *args):
-    startTime = time.time()
+    startTime = dt.now()
     funcResult = func(*args)
-    stopTime = time.time()
-    return (stopTime - startTime, funcResult)
+    stopTime = dt.now()
+    elapsed = stopTime - startTime
+    return (elapsed.total_seconds(), funcResult)
     
 
 def bubbleSort(array):
@@ -105,7 +106,8 @@ def radixSort(array):
     return arr
         
 #merge sort
-def mergeSort(arr):
+def mergeSort(array):
+    arr = list(array)
     if len(arr) > 1:
  
          # Finding the mid of the array
@@ -118,10 +120,10 @@ def mergeSort(arr):
         R = arr[mid:]
  
         # Sorting the first half
-        mergeSort(L)
+        L = mergeSort(L)
  
         # Sorting the second half
-        mergeSort(R)
+        R = mergeSort(R)
  
         i = j = k = 0
  
@@ -145,6 +147,8 @@ def mergeSort(arr):
             arr[k] = R[j]
             j += 1
             k += 1
+    return arr
+
 
 #generate the arrays
 def genArray(count,floor=RAND_FLOOR,ceil=RAND_CEIL):
@@ -160,9 +164,8 @@ for a in arrays_reversed: a.reverse()
 # radix sort best/worst case arrays (single digits vs many digits)
 arrays_small = [[j%10 for j in i] for i in arrays_avg]
 arrays_large = [genArray(s,RAND_LARGE_FLOOR,RAND_LARGE_CEIL) for s in ARR_SIZES]
-# heap sort best/worst case arrays (homogeneous vs completely heterogeneous)
-arrays_distinct = [list(range(s)) for s in ARR_SIZES]
-arrays_identical = [[random.randint(RAND_FLOOR,RAND_CEIL)]*s for s in ARR_SIZES]
+# merge sort worst case array, i think??? this is stupid
+arrays_max_compare = [[i%(n+1) for i in range(0,(n+2)*(n+1)//2,(n+2)//2)][:n] for n in ARR_SIZES]
 print("Arrays generated.")
 
 
@@ -200,33 +203,31 @@ sorts = [
     {
     'name': 'Merge Sort',
     'func': mergeSort,
-    'best': arrays_identical,
-    'worst': arrays_distinct,
+    'best': arrays_sorted,
+    'worst': arrays_max_compare, # ?????
     'average': arrays_avg
     }
 ]
 
 results = []
-temp = []
-for size in ARR_SIZES:
-    temp.append("Average case ({0})".format(size))
-    temp.append("Best case ({0})".format(size))
-    temp.append("Worst case ({0})".format(size))
-results.append('\t' + '\t'.join(temp))
+cases = ("best", "average", "worst")
 
-for s in sorts:
-    print('\n===',s['name'].upper(),'===\n')
-    row_results = []
-    row_results.append(s['name'])
-    for i in range(len(ARR_SIZES)):
-        for case in ('average', 'best', 'worst'):
+for i in range(len(ARR_SIZES)):
+    table = [str(ARR_SIZES[i])+"\t"+'\t'.join([c.capitalize() for c in cases])]
+    print('\n=== N={0} ===\n'.format(ARR_SIZES[i]))
+    for s in sorts:
+        print(s['name'].upper())
+        row_results = []
+        row_results.append(s['name'])
+        for case in cases:
             print("Timing {0} {1} case with {2} elements...".format(s['name'], case, ARR_SIZES[i]))
             elapsedTime = invokeTimed(s['func'], s[case][i])[0]
             row_results.append(str(elapsedTime))
             print("Elapsed time:", elapsedTime, "seconds\n")
-    results.append('\t'.join(row_results))
+        table.append('\t'.join(row_results))
+    results.append('\n'.join(table))
 
-final_result = '\n'.join(results)
+final_result = '\n\n'.join(results)
 print(final_result)
 print('Writing to out.txt...')
 with open('out.txt', 'w') as f:
